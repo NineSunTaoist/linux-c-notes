@@ -33,3 +33,53 @@
 3.如果这个工程的头文件被改变了，那么我们需要编译引用了这几个头文件的C文件，并链接目标程序。
 ```
 
+
+
+## 4、Makefile入门案列
+
+* 1 编辑main.c文件
+
+```
+#include "add.h"
+
+int main() {
+    Add(10, 15);
+    printf("hello world\n");
+}
+```
+
+* 2 编辑add.h文件
+
+```
+#include <stdio.h>
+
+void Add(int a, int b);
+```
+
+* 3 编辑add.c文件
+
+```
+#include "add.h"
+
+void Add(int a, int b) {
+    printf("a + b = %d\n", a + b);
+}
+```
+
+* 4 编辑Makefile文件
+
+```
+test: main.o add.o
+	cc -o test main.o add.o
+
+main.o : main.c add.h
+	cc -c main.c
+add.o : add.c add.h
+	cc -c add.c
+
+clean:
+	rm edit *.o
+```
+
+执行make就生成可执行文件
+执行make clean就清理文件
