@@ -83,3 +83,25 @@ clean:
 
 执行make就生成可执行文件
 执行make clean就清理文件
+
+
+
+## 5、使用变量
+
+将上述makefile修改为变量的方式
+
+```
+objects = main.o add.o
+
+test: main.o add.o
+	cc -o test $(objects)
+
+main.o : main.c add.h
+	cc -c main.c
+add.o : add.c add.h
+	cc -c add.c
+
+clean:
+	rm test $(objects)
+```
+
