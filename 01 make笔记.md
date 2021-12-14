@@ -93,13 +93,30 @@ clean:
 ```
 objects = main.o add.o
 
-test: main.o add.o
+test: $(objects)
 	cc -o test $(objects)
 
 main.o : main.c add.h
 	cc -c main.c
 add.o : add.c add.h
 	cc -c add.c
+
+clean:
+	rm test $(objects)
+```
+
+
+
+## 6、make自动推导
+
+```
+objects = main.o add.o
+
+test: $(objects)
+	cc -o test $(objects)
+
+main.o : add.h
+add.o : add.h
 
 clean:
 	rm test $(objects)
