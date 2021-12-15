@@ -4,6 +4,8 @@
 
 # **Makefile 笔记**
 
+原文参考：https://seisman.github.io/how-to-write-makefile/introduction.html#
+
 
 
 ## 1、编译和连接
@@ -122,3 +124,68 @@ clean:
 	rm test $(objects)
 ```
 
+
+
+## 7、清理垃圾
+
+写在最后
+
+```
+clean:
+	rm test $(objects)
+```
+
+更稳健的写法
+
+```
+.PHONY : clean
+clean :
+    -rm edit $(objects)
+```
+
+`.PHONY` 表示 `clean` 是一个“伪目标”。而在 `rm` 命令前面加了一个小减号的意思就是，也许某些文件出现问题，但不要管，继续做后面的事。
+
+
+
+## 8、Makefile文件名
+
+通常使用Makefile和makefile
+
+使用其他名字时`make -f Make.Linux` 或 `make --file Make.AIX`
+
+
+
+## 9、引用其它的Makefile
+
+在Makefile使用 `include` 关键字可以把别的Makefile包含进来，这很像C语言的 `#include` ，被包含的文件会原模原样的放在当前文件的包含位置。 `include` 的语法是：
+
+```
+include <filename>
+```
+
+`filename` 可以是当前操作系统Shell的文件模式（可以包含路径和通配符）。
+
+在 `include` 前面可以有一些空字符，但是绝不能是 `Tab` 键开始。 `include` 和 `<filename>` 可以用一个或多个空格隔开。举个例子，你有这样几个Makefile： `a.mk` 、 `b.mk` 、 `c.mk` ，还有一个文件叫 `foo.make` ，以及一个变量 `$(bar)` ，其包含了 `e.mk` 和 `f.mk` ，那么，下面的语句：
+
+```
+include foo.make *.mk $(bar)
+```
+
+等价于：
+
+```
+include foo.make a.mk b.mk c.mk e.mk f.mk
+```
+
+make命令开始时，会找寻 `include` 所指出的其它Makefile，并把其内容安置在当前的位置。就好像C/C++的 `#include` 指令一样。如果文件都没有指定绝对路径或是相对路径的话，make会在当前目录下首先寻找，如果当前目录下没有找到，那么，make还会在下面的几个目录下找：
+
+1. 如果make执行时，有 `-I` 或 `--include-dir` 参数，那么make就会在这个参数所指定的目录下去寻找。
+2. 如果目录 `<prefix>/include` （一般是： `/usr/local/bin` 或 `/usr/include` ）存在的话，make也会去找。
+
+如果有文件没有找到的话，make会生成一条警告信息，但不会马上出现致命错误。它会继续载入其它的文件，一旦完成makefile的读取，make会再重试这些没有找到，或是不能读取的文件，如果还是不行，make才会出现一条致命信息。如果你想让make不理那些无法读取的文件，而继续执行，你可以在include前加一个减号“-”。如：
+
+```
+-include <filename>
+```
+
+其表示，无论include过程中出现什么错误，都不要报错继续执行。和其它版本make兼容的相关命令是sinclude，其作用和这一个是一样的。
